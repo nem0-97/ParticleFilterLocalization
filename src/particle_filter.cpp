@@ -22,7 +22,6 @@ using std::string;
 using std::vector;
 
 using std::normal_distribution;
-using std::default_random_engine;
 using std::discrete_distribution;
 //using std::uniform_real_distribution;//no longer using
 
@@ -32,7 +31,6 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     normal_distribution<double> xDist(x,std[0]);//construct normal distributions around passed in x,y, and theta value to sample particles from
     normal_distribution<double> yDist(y,std[1]);
     normal_distribution<double> tDist(theta,std[2]);
-    default_random_engine gen;//use this to get a random values from normal distibutions
     
     for(int i=0; i<num_particles;i++){
         Particle p={i,xDist(gen),yDist(gen),tDist(gen),1.0};//id is just index
@@ -44,7 +42,6 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
 void ParticleFilter::prediction(double delta_t, double std_pos[],
                                 double velocity, double yaw_rate) {
-    default_random_engine gen;//use this to get a random values from normal distibutions
     normal_distribution<double> xDist(0.0,std_pos[0]);//normal distributions to sample noise from
     normal_distribution<double> yDist(0.0,std_pos[1]);
     normal_distribution<double> tDist(0.0,std_pos[2]);
@@ -107,7 +104,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 }
 
 void ParticleFilter::resample() {
-    default_random_engine gen;
     discrete_distribution<int> distr(weights.begin(), weights.end());//create probabilty distribution for indices of particles
     
     vector<Particle> p;//list of resampled particles
@@ -120,24 +116,24 @@ void ParticleFilter::resample() {
     //started keeping track of weights in weights array so no longer using either of 2 methods below
     
     /*uniform_real_distribution<double> distr(0.0,1.0);
-    int ind=(int) (distr(gen)*num_particles);
-    double maxw=-1.0;//could make 0.0
-    for(int i=0;i<num_particles;i++){//get highest weight of any particle
-        if(maxw<particles[i].weight){
-            maxw=particles[i].weight;
-        }
-    }
-    maxw*=2.0;
-    double beta=0.0;
-    
-    for(int i=0;i<num_particles;i++){//"spin wheel" num_particles time
-        beta+=distr(gen)*maxw;
-        while(beta>particles[ind].weight){
-            beta-=particles[ind].weight;
-            ind=(ind+1)%num_particles;
-        }
-        p.push_back(particles[ind]);//choose particle "wheel lands on"
-    }*/
+     int ind=(int) (distr(gen)*num_particles);
+     double maxw=-1.0;//could make 0.0
+     for(int i=0;i<num_particles;i++){//get highest weight of any particle
+     if(maxw<particles[i].weight){
+     maxw=particles[i].weight;
+     }
+     }
+     maxw*=2.0;
+     double beta=0.0;
+     
+     for(int i=0;i<num_particles;i++){//"spin wheel" num_particles time
+     beta+=distr(gen)*maxw;
+     while(beta>particles[ind].weight){
+     beta-=particles[ind].weight;
+     ind=(ind+1)%num_particles;
+     }
+     p.push_back(particles[ind]);//choose particle "wheel lands on"
+     }*/
     //another simple method that could be used for resampling(not as good, particles stored further into list have lower liklihood of being chosen)
     /* double sum=0.0;
      for(int i=0;i<num_particles;i++){//sum particle weights
